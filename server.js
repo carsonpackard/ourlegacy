@@ -6,7 +6,7 @@ const formidable = require("formidable");
 var app = express();
 const { parseSync } = require('subtitle')
 const MongoClient = require('mongodb').MongoClient;
-
+const config = require('config');
 // set the view engine to ejs
 const uploadPath = path.join(__dirname, 'assets/');
 const uri = 'mongodb+srv://dbadmin:'+pass+'@cluster0.nyfphpc.mongodb.net/?retryWrites=true&w=majority';

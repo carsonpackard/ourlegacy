@@ -7,7 +7,7 @@ var TextFinder = function(options) {
 	for (var opt in options) {
 		this[opt] = options[opt];
 	}
-	
+	 
 	this.skipTagsRegex = new RegExp('^(' + this.skipTags.join('|') + ')$', 'i');
 	this.skipClassesRegex = new RegExp('\b(' + this.skipClasses.join('|') + ')\b', 'i');	
 	
