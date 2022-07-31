@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head'); %>
+</head>
+<body class="container">
+
+<header>
+  <%- include('../partials/header'); %>
+</header>
+
+<main>
+  <div class="jumbotron">
+    <h1>Welcome to Packard Video Locator Tool 2.0</h1>
+    <p>You can search all of the subtitles from all kinds of media</p>
+
+    <form action="/search" method="get">
+      <label for="fname">Search Database</label><br>
+      <input type="text" id="fname" name="q" value="">
+      <input type="checkbox" id="caseSensative" name="case" value="true">
+      <label for="caseSensative"> Case Sensative</label>
+      <input type="checkbox" id="advanced" name="advanced" value="true">
+      <label for="caseSensative"> Advanced Search</label>
+      <br>
+      <input type="submit" value="Search">
+    </form> 
+  </div>
+</main>
+
+<footer>
+  <%- include('../partials/footer'); %>
+</footer>
+
+</body>
+</html>
