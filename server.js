@@ -9,7 +9,7 @@ const MongoClient = require('mongodb').MongoClient;
 const config = require('config');
 // set the view engine to ejs
 const uploadPath = path.join(__dirname, 'assets/');
-const uri = 'mongodb+srv://dbadmin:'+pass+'@cluster0.nyfphpc.mongodb.net/?retryWrites=true&w=majority';
+const uri= config.get('dbConfig.uri');
 const client = new MongoClient(uri, { useNewUrlParser: true });
 
 client.connect();
@@ -34,21 +34,9 @@ async function findListings(client, resultsLimit) {
       // });
       // }
     }
-    app.set('view engine', 'ejs');
+app.set('view engine', 'ejs');
 
-    app.get('/', function(req, res) {
-  var mascots = [
-    { name: 'Sammy', organization: "DigitalOcean", birth_year: 2012, id:1},
-    { name: 'Tux', organization: "Linux", birth_year: 1996, id:2},
-    { name: 'Moby Dock', organization: "Docker", birth_year: 2013, id:3}
-  ];
-  var tagline = "No programming concept is complete without a cute animal mascot.";
-  
-  res.render('pages/index', {
-    mascots: mascots,
-    tagline: tagline
-  });
-});
+
 app.get('/search', async function(req, res) {
   var query = req.query.q;
   var advanced = req.query.advanced;
