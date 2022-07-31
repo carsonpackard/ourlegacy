@@ -16,24 +16,6 @@ client.connect();
 const media = client.db('Legacy').collection('media')
 const subdb = client.db('Legacy').collection('subtitles')
 
-async function findListings(client, resultsLimit) {
-  // const cursor = client.db('Legacy').collection('media').find()
-  const subtitle_cursor = client.db('Legacy').collection('subtitles').find({ 'subtitles.subtitle' : {$regex:"example"}});
-  
-  const results = await subtitle_cursor.toArray();
-  // console.log(results.length);
-  
-  // if (results.length > 0) {
-    // console.log(`Found ${results.length} listing(s):`);
-    // results.forEach((result, i) => {
-      //   var current_item = cursor.find(result.media_id)
-      //   console.log();
-      //   console.log(`${i + 1}. name: ${current_item.title}`);
-      //   console.log(`type: ${current_item.type}`);
-      //   console.log(`filepath: ${current_item.filePath}`);
-      // });
-      // }
-    }
 app.set('view engine', 'ejs');
 
 
@@ -111,8 +93,12 @@ app.post('/update', async function(req, res) {
 });
 // about page
 app.get('/about', function(req, res) {
-    // var path = req.params.post;
-    res.render('pages/about');
+  // var path = req.params.post;
+  res.render('pages/about');
+});
+app.get('/', function(req, res) {
+  // var path = req.params.post;
+  res.render('pages/index');
 });
 
 app.get('/stream/:path', (req, res) => {
