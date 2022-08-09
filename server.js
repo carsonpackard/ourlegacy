@@ -198,8 +198,8 @@ app.post("/upload", async function(req, res) {
   });
 });
 
-app.get('/media/:media_id', async function(req, res) {
-    var media_id = req.params.media_id;
+app.get('/media/:id', async function(req, res) {
+    var media_id = req.params.id;
     var startTime = 0;
     var title = "";
     var subtitles = [];
@@ -209,10 +209,12 @@ app.get('/media/:media_id', async function(req, res) {
     }
     try{
 
+      console.log(media_id)
+      // console.log(req.params)
       var object = new ObjectID(media_id)
       const cursor = await media.findOne({'_id':object});
       const subtitle_cursor = await subdb.find({'media_id':object}).toArray();
-      
+       
       // const results = cursor.toArray();
       // console.log(cursor, subtitle_cursor)
       var title = cursor.title

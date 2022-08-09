@@ -19,7 +19,10 @@
   text-overflow: ellipsis;
   display: inline-block;
 }
+a#less {
+  display: none;
 
+}
 .subtitle{
   margin-left: 23%;
   display: list-item;
@@ -56,8 +59,8 @@ a {
     <div id="scroll" class="scroll" style="width:100%;height:100%;">
       <ul>
         <% for (var i = 0; i < results.length; i++) {%>
-          <li class="result" style="margin-top: 5%">
-            <a  href="/media/<%= results[i].media._id%>" width="100%"> 
+          <li  style="margin-top: 5%">
+            <a  class="result" href="/media/<%= results[i].media._id%>" width="100%"> 
               <div>
                 <object class="info" data="/images/<%= results[i].media.thumbnail%>" type="image/png" >
                   <img class="info" src="/images/default.jpg" >
@@ -65,16 +68,19 @@ a {
                 <div class="result" > <%= results[i].media.title%></div>
               </div>
             </a>
+            <% for (var t = 0; t < results[i].subtitles.length; t++) { %>
+              <% if( t < 8){ %>
+                <a class="subtitle" href="/media/<%= results[i].media._id%>?t=<%= results[i].subtitles[t].start /1000%>"> 
+                  <%= new Date(results[i].subtitles[t].start).toISOString().substring(11, 19) %>  : <%=results[i].subtitles[t].text%>
+                </a>
+                <% } else{ %>  
+                  <a class="subtitle" id="less" href="/media/<%= results[i].media._id%>?t=<%= results[i].subtitles[t].start /1000%>"> 
+                    <%= new Date(results[i].subtitles[t].start).toISOString().substring(11, 19) %> : <%=results[i].subtitles[t].text%>
+                  </a>
+                         
+                <% } %> 
+          <% } %>
           </li>
-            <% results[i].subtitles.forEach(function(subtitle){ %>
-              <a class="subtitle" href="/media/<%= results[i].media._id%>?t=<%= subtitle.start /1000%>"> 
-                  <% if( (subtitle.start / 1000) < 3600){ %>
-                      <%= new Date(subtitle.start).toISOString().substring(14, 19) %>
-                  <% } else{ %>  
-                          <%= new Date(subtitle.start).toISOString().substring(11, 16) %>
-                  <% } %>  : <%=subtitle.text%>
-              </a>
-          <% }); %>
         <% } %>
       </ul>
     </div>

@@ -4,95 +4,32 @@
   <%- include('../partials/head'); %>
   <script type="text/javascript" src="/js/videoaligner.js"></script>
   <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <link href="https://vjs.zencdn.net/7.20.1/video-js.css" rel="stylesheet" />
+  <script src="https://vjs.zencdn.net/7.20.1/video.min.js"></script>
+  
 </head>
 <body class="container" >
-  <script>
-    function skip(time){
-    var video = document.getElementById('video');
-    video.currentTime = time;
-    }
-    function shareUrl(){
-    var url = new URL(window.location.href);
-    var shareBox = document.getElementById('shareBox')
-    url.searchParams.append('t', document.getElementById('video').currentTime);
-    shareBox.value = url.href
-    shareBox.type = "shown"
-    }
-    function alignSubtitles(){
-      var video = document.getElementById('video');
-      var aligner = new VideoAligner(document.getElementById('scroll'), video); 
-      // console.log("added listeners")
-      video.addEventListener('timeupdate', function() { aligner.selectSubtitle(); });
-	    // video.addEventListener('seeked', function() { aligner.selectSubtitle(); });
-      aligner.align("<%=url%>", <%= startTime %>)
-    } 
-    function updateSubtitle(id) {
-        var updateUrl = "<%= updateUrl %>"; 
-        var subtitle =  document.getElementById(id)
-
-        subtitle.setAttribute("contenteditable", true);
-        subtitle.parentElement.setAttribute("class", "editSubtitle")
-        subtitle.focus()
-        subtitle.addEventListener('keydown', (evt) => {
-          if (evt.keyCode === 13) {
-              evt.preventDefault();
-              subtitle.setAttribute("contenteditable", false);
-              subtitle.parentElement.setAttribute("class", "subtitle")
-              subtitle.blur()
-              var text = subtitle.innerHTML
-              fetch(updateUrl, {
-                  method: 'POST',
-                  body: JSON.stringify({
-                    id:id,
-                    text:text,
-                  }),headers: {'Content-type': 'application/json; charset=UTF-8',}});
-          }
-      });
-      subtitle.addEventListener('blur', (evt) => {
-        var currentedits = document.getElementsByClassName("editSubtitle")
-        if(currentedits.length > 0){
-          var lastnode = currentedits[0].childNodes[3];
-          var temptext = lastnode.innerHTML;
-          var tempid = lastnode.getAttribute("id")
-          lastnode.setAttribute("contenteditable", false);
-          currentedits[0].setAttribute("class", "subtitle")
-          console.log(tempid, temptext)
-          fetch(updateUrl, {
-                  method: 'POST',
-                  body: JSON.stringify({
-                    id:tempid,
-                    text:temptext,
-                  }),headers: {'Content-type': 'application/json; charset=UTF-8',}});
-
-        }
-      });
-    }
-    document.addEventListener('DOMContentLoaded', alignSubtitles);
-    </script>
     <style>
-    .subtitle {
-      -webkit-user-select: none; /* Safari */
+      .subtitle {
+        -webkit-user-select: none; /* Safari */
         -ms-user-select: none; /* IE 10 and IE 11 */
         user-select: none; /* Standard syntax */
-      cursor: pointer;}
-    .subtitle:hover {
+        cursor: pointer;}
+        .subtitle:hover {
         font-weight: bold;
         
     } 
-    video{
-      width: 100%;
-      height: auto;
-    }
+
     .scroll{
       width: 100%;
-      height: fit-content;
+      max-height: 500px;
     }
     .info{
   
   display: inline-block;
-  }
-    
-    </style>
+}
+
+</style>
 <header>
   <%- include('../partials/header'); %>
 </header>
@@ -101,36 +38,112 @@
   <div class="jumbotron">
     <h2>Video</h2>
     
-
+    
     <h3>Title: <%= title %></h3>
-    <video controls id="video">
-        <source src="/stream/<%= src %>" type="video/mp4">
-
-        Your browser does not support HTML video.
-    </video>
-    <button onclick="shareUrl()">Share</button> 
-    <input type="hidden" type="text" id="shareBox">
-    <div id="scroll" class="scroll" style="width:800px;height:300px;line-height:2.5em;overflow:scroll;padding:5px;">
-      
-      <% subtitles.forEach(function(subtitle) { %>
-        <div class="subtitle">
-          <div class="info">
-            <% if( (subtitle.start / 1000) < 3600){ %>
-              <%= new Date(subtitle.start).toISOString().substring(14, 19) %>
-              <% } else{ %>  
+    <video id="vid1" class="video-js" controls preload="auto"  data-setup='{"fluid": true}' width="100%" height="100%">
+    <source src="/stream/<%= src %>" type="video/mp4" />
+    <p class="vjs-no-js">
+      To view this video please enable JavaScript, and consider upgrading to a
+      web browser that
+      <a href="https://videojs.com/html5-video-support/" target="_blank"
+      >supports HTML5 video</a
+      >
+    </p>
+  </video>
+  <button onclick="shareUrl()">Share</button> 
+  <input type="hidden" type="text" id="shareBox">
+  <div id="scroll" class="scroll" style="line-height:2.5em;overflow:scroll;padding:5px;">
+    
+    <% subtitles.forEach(function(subtitle) { %>
+      <div class="subtitle">
+        <div class="info">
+          <% if( (subtitle.start / 1000) < 3600){ %>
+            <%= new Date(subtitle.start).toISOString().substring(14, 19) %>
+            <% } else{ %>  
               <%= new Date(subtitle.start).toISOString().substring(11, 16) %>
-           <% } %>  : </div>
-          <div class="info" onclick="skip(<%= subtitle.start / 1000 %>)" id="<%= subtitle._id %>" ondblclick="updateSubtitle(this.id)"><%= subtitle.text %></div>
-        </div> 
-
-      <% }); %>
-    </div>
-  </div>
-</main>
-
-<footer>
-  <%- include('../partials/footer'); %>
-</footer>
-
-</body>
+              <% } %>  : </div>
+              <div class="info" onclick="skip(<%= subtitle.start / 1000 %>)" id="<%= subtitle._id %>" ondblclick="updateSubtitle(this.id)"><%= subtitle.text %></div>
+            </div> 
+            
+            <% }); %>
+          </div>
+        </div>
+      </main>
+      
+      <footer>
+        <%- include('../partials/footer'); %>
+      </footer>
+      
+      <script>
+          var player = videojs("vid1");
+      player.ready(function() {
+        alignSubtitles();
+      });
+      
+      function skip(time){
+        var video = document.getElementById('vid1_html5_api');
+        video.currentTime = time;
+      }
+      function shareUrl(){
+        var url = new URL(window.location.href);
+        var shareBox = document.getElementById('shareBox')
+        url.searchParams.append('t', document.getElementById('video').currentTime);
+        shareBox.value = url.href
+        shareBox.type = "shown"
+      }
+      function alignSubtitles(){
+        
+        var video = document.getElementById('vid1_html5_api');
+        var aligner = new VideoAligner(document.getElementById('scroll'), video); 
+        // console.log("added listeners")
+        video.addEventListener('timeupdate', function() { aligner.selectSubtitle(); });
+        // video.addEventListener('seeked', function() { aligner.selectSubtitle(); });
+        aligner.align("<%=url%>", <%= startTime %>)
+        
+      } 
+      function updateSubtitle(id) {
+        var updateUrl = "<%= updateUrl %>"; 
+        var subtitle =  document.getElementById(id)
+        
+        subtitle.setAttribute("contenteditable", true);
+        subtitle.parentElement.setAttribute("class", "editSubtitle")
+        subtitle.focus()
+        subtitle.addEventListener('keydown', (evt) => {
+          if (evt.keyCode === 13) {
+            evt.preventDefault();
+            subtitle.setAttribute("contenteditable", false);
+            subtitle.parentElement.setAttribute("class", "subtitle")
+            subtitle.blur()
+            var text = subtitle.innerHTML
+            fetch(updateUrl, {
+              method: 'POST',
+              body: JSON.stringify({
+                id:id,
+                text:text,
+              }),headers: {'Content-type': 'application/json; charset=UTF-8',}});
+            }
+        });
+        subtitle.addEventListener('blur', (evt) => {
+          var currentedits = document.getElementsByClassName("editSubtitle")
+          if(currentedits.length > 0){
+            var lastnode = currentedits[0].childNodes[3];
+            var temptext = lastnode.innerHTML;
+            var tempid = lastnode.getAttribute("id")
+            lastnode.setAttribute("contenteditable", false);
+            currentedits[0].setAttribute("class", "subtitle")
+            console.log(tempid, temptext)
+            fetch(updateUrl, {
+              method: 'POST',
+              body: JSON.stringify({
+                id:tempid,
+                text:temptext,
+              }),headers: {'Content-type': 'application/json; charset=UTF-8',}});
+              
+            }
+          });
+        }
+      
+          // document.addEventListener('DOMContentLoaded', test);
+          </script>
+    </body>
 </html>

@@ -16,7 +16,9 @@
     "formidable": "^2.0.1",
     "mongodb": "^4.8.0",
     "path": "^0.12.7",
-    "subtitle": "^4.2.1",
+    "subtitle": "^4.2.1"
+  },
+  "devDependencies": {
     "video.js": "^7.20.1"
   }
 }
