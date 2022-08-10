@@ -28,12 +28,12 @@ a#less {
   display: list-item;
 }
 
-a:hover{
+.color:hover{
   color: black;
   text-decoration: none;
   
 }
-a {
+.color {
   color: black;
   text-decoration: none;
   
@@ -46,8 +46,35 @@ a {
   height: auto;
   display:inline-block;
 }
-
+.lessButton:hover{
+  cursor: pointer;
+}
+.lessButton{
+  margin-left: 23%;
+}
 </style>
+<script>
+  function show(button){
+    var parent = button.parentElement;
+    for (let index = 0; index < parent.children.length; index++) {
+      var element = parent.children[index];
+      if(element.id == "more"){
+        element.id = "less"
+      }else if(element.id == "less"){
+        element.id = "more"
+      }
+    }
+    if(button.innerHTML == "more"){
+      button.innerHTML = "less"
+    }else{
+      button.innerHTML = "more"
+    }
+
+  }
+
+
+
+</script>
 <header>
   <%- include('../partials/header'); %>
 </header>
@@ -60,7 +87,7 @@ a {
       <ul>
         <% for (var i = 0; i < results.length; i++) {%>
           <li  style="margin-top: 5%">
-            <a  class="result" href="/media/<%= results[i].media._id%>" width="100%"> 
+            <a  class="result color" href="/media/<%= results[i].media._id%>" width="100%"> 
               <div>
                 <object class="info" data="/images/<%= results[i].media.thumbnail%>" type="image/png" >
                   <img class="info" src="/images/default.jpg" >
@@ -68,18 +95,22 @@ a {
                 <div class="result" > <%= results[i].media.title%></div>
               </div>
             </a>
+
+            
+            <% var tempid = "" %>
             <% for (var t = 0; t < results[i].subtitles.length; t++) { %>
               <% if( t < 8){ %>
-                <a class="subtitle" href="/media/<%= results[i].media._id%>?t=<%= results[i].subtitles[t].start /1000%>"> 
-                  <%= new Date(results[i].subtitles[t].start).toISOString().substring(11, 19) %>  : <%=results[i].subtitles[t].text%>
-                </a>
+                <% tempid = "shown" %>
                 <% } else{ %>  
-                  <a class="subtitle" id="less" href="/media/<%= results[i].media._id%>?t=<%= results[i].subtitles[t].start /1000%>"> 
-                    <%= new Date(results[i].subtitles[t].start).toISOString().substring(11, 19) %> : <%=results[i].subtitles[t].text%>
-                  </a>
-                         
-                <% } %> 
-          <% } %>
+                  <% tempid = "less" %>
+                  <% } %> 
+                  <a class="subtitle color" id="<%= tempid %>"  href="/media/<%= results[i].media._id%>?t=<%= results[i].subtitles[t].start /1000%>"> 
+                    <%= new Date(results[i].subtitles[t].start).toISOString().substring(11, 19) %>  : <%=results[i].subtitles[t].text%>
+                  </a>     
+                  <% } %>
+            <% if(results[i].subtitles.length > 8){ %>
+            <a class="lessButton" onclick="show(this)">more</a>
+            <% } %>
           </li>
         <% } %>
       </ul>
